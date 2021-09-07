@@ -6,10 +6,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,33 +45,110 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /*
-    //Metodo boton guardar
-    public void Guardar(View view){
-        String nombre = et_nombres.getText.toString();
-        String apellido = et_apellidos.getText.toString();
-        String telefono = et_telefono.getText.toString();
-        String email = et_email.getText.toString();
-        String direccion = et_direccion.getText.toString();
-
-        SharedPreferences preferencias = getSharedPreferences("agenda", Context.MODE_PRIVATE);
-        SharedPreferences.Editor obj_editor = preferencias.edit();
-        obj_editor.putString(nombre, apellido);
-    }
-    */
-
 
     //metodo para agregar contactos a la agenda
 
     public void agregarContactos(View vw){
-    Intent i = new Intent(this,DatosExtra.class);
-    i.putExtra("nombre",et_nombres.getText().toString());
-    i.putExtra("apellido",et_apellidos.getText().toString());
-    i.putExtra("telefono",et_telefono.getText().toString());
-    i.putExtra("email",et_email.getText().toString());
-    i.putExtra("direccion",et_direccion.getText().toString());
-    i.putExtra("fechaNac",fechaNac.getText().toString());
-    startActivity(i);
+        if(validarCampos()){
+            Intent i = new Intent(this,DatosExtra.class);
+            i.putExtra("nombre",et_nombres.getText().toString());
+            i.putExtra("apellido",et_apellidos.getText().toString());
+            i.putExtra("telefono",et_telefono.getText().toString().trim());
+            i.putExtra("email",et_email.getText().toString().trim());
+            i.putExtra("direccion",et_direccion.getText().toString());
+            i.putExtra("fechaNac",fechaNac.getText().toString().trim());
+            startActivity(i);
+        }
+    }
+
+    public boolean validarCampos(){
+        String direccion = et_direccion.getText().toString();
+
+
+        if(!validarNombreApellido()){
+            Toast.makeText(this, "Ingrese un Nombre y un Apellido valido.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(!validarEmail()){
+            Toast.makeText(this, "Ingrese un Email valido.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        /*
+        if(!validarTelefono()){
+            Toast.makeText(this, "Ingrese un Telefono valido.", Toast.LENGTH_SHORT).show();
+            return false;
+        }*/
+
+        if(!(direccion.length() > 0)){
+            Toast.makeText(this, "Ingrese una Direccion valida.", Toast.LENGTH_SHORT).show();
+            return  false;
+        }
+
+        if(!validarFecha()){
+            Toast.makeText(this, "Ingrese una Fecha valida.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean validarFecha(){
+        String fecha = fechaNac.getText().toString().trim();
+        SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
+        Date objFecha = null;
+        Date fechaHoy = Calendar.getInstance().getTime();
+        String fechaHoyString = formato.format(fechaHoy);
+
+        if(!(fecha.length() > 0))
+            return false;
+        try {
+            objFecha = formato.parse(fecha);
+            fechaHoy = formato.parse(fechaHoyString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if(objFecha.after(fechaHoy)){
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean validarNombreApellido(){
+        String nombre = et_nombres.getText().toString();
+        String apellido = et_apellidos.getText().toString();
+        String patronNumerico = "[0-9]";
+
+        if(nombre.matches(patronNumerico) || apellido.matches(patronNumerico) || !(apellido.length() > 0) || !(nombre.length() > 0)){
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean validarTelefono(){
+        String telefono = et_email.getText().toString().trim();
+        String patronTelefono = "[0-9\\-]{9,11}";
+
+        if (telefono.length() > 0)
+        {
+            int numero = Integer.parseInt(telefono);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean validarEmail(){
+        String email = et_email.getText().toString().trim();
+
+        if (email.length() > 0)
+        {
+            return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
+        return false;
     }
 
 
@@ -79,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id==R.id.listado_contactos){
+            Intent in = new Intent(this, ListadoContactos.class);
+            startActivity(in);
             return true;
         }
 

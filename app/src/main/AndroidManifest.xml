@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TP2_GRUPO7">
         <activity
+            android:name=".DetalleContacto"
+            android:exported="true" />
+        <activity
+            android:name=".ListadoContactos"
+            android:exported="true" />
+        <activity
             android:name=".DatosExtra"
             android:exported="true" />
         <activity

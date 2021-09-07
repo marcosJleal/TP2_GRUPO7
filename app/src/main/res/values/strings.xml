@@ -20,6 +20,7 @@
     <string name="tvFechaNacimiento">FECHA DE NACIMIENTO</string>
     <string name="btnContinuar">CONTINUAR</string>
     <string name="btnGuardar">GUARDAR</string>
+    <string name="btnVolver">VOLVER</string>
     <string name="tvTextoRadioButton">NIVEL DE ESTUDIOS ALCANZADOS</string>
     <string name="tvRadioButtonOpcion1">Primario incompleto</string>
     <string name="tvRadioButtonOpcion2">Primario completo</string>

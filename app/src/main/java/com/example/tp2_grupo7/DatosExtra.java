@@ -21,6 +21,7 @@ public class DatosExtra extends AppCompatActivity {
     private RadioButton rbPrimIncomp,rbPrimCompleto,rbSecunIncom,rbSecunComp,rbOtros;
     private CheckBox chkDeporte,chkMusica,chkArte,chkTecnologia;
     private Switch DeseoInfo;
+    private String [] archivos = {};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +33,9 @@ public class DatosExtra extends AppCompatActivity {
         email=getIntent().getStringExtra("email");
         direccion=getIntent().getStringExtra("direccion");
         fechaNac=getIntent().getStringExtra("fechaNac");
-        //matcheo el front con el back
+        archivos = fileList();
+
+        //Busqueda de elementos del front
         rbPrimIncomp=(RadioButton) findViewById(R.id.RbPrimarioIncompleto);
         rbPrimCompleto=(RadioButton) findViewById(R.id.RbPrimarioCompleto);
         rbSecunComp=(RadioButton) findViewById(R.id.RbSecundarioCompleto);
@@ -49,6 +52,8 @@ public class DatosExtra extends AppCompatActivity {
         String rbCheck="";
         String check="";
         String DeseaRecibirInfo="No";
+        String infoContacto;
+        String nombreArchivo;
 
         if(rbPrimIncomp.isChecked())rbCheck="Primario incompleto";
         if(rbPrimCompleto.isChecked())rbCheck="Primario completo";
@@ -60,18 +65,28 @@ public class DatosExtra extends AppCompatActivity {
         if(chkMusica.isChecked())check=check+" Musica";
         if(chkDeporte.isChecked())check=check+" Deporte";
         if(DeseoInfo.isChecked())DeseaRecibirInfo="Si";
+
         try {
             //Guardo el contacto
-            OutputStreamWriter archivoContact= new OutputStreamWriter(openFileOutput(nombre+apellido+" - "+email+".txt", Activity.MODE_PRIVATE));
-            archivoContact.write("Nombre:"+nombre+"\n"+"Apellido:"+apellido+"\n"+"Telefono:"+telefono+"\n"+"Email:"+email+"\n"+"Direccion:"+direccion+"\n"+"Fecha de nacimiento:"+fechaNac+"Nivel de estudio alcanzado:"+rbCheck+"\n"+"Intereses:"+check+"\n"+"Deseo recibir info:"+DeseaRecibirInfo);
-            archivoContact.flush();
-            archivoContact.close();
+            nombreArchivo = nombre+apellido+" - "+email+".txt";
+            if(!ArchivoExiste(archivos, nombreArchivo)){
+                OutputStreamWriter archivoContact= new OutputStreamWriter(openFileOutput(nombreArchivo, Activity.MODE_PRIVATE));
+                infoContacto = "Nombre: "+nombre+"\n"+"Apellido: "+apellido+"\n"+"Telefono: "+telefono+"\n"+"Email: "+email+"\n"+"Direccion: "+direccion+"\n"+"Fecha de nacimiento: "+fechaNac+"Nivel de estudio alcanzado: "+rbCheck+"\n"+"Intereses: "+check+"\n"+"Deseo recibir info: "+DeseaRecibirInfo;
+                archivoContact.write(infoContacto);
+                archivoContact.flush();
+                archivoContact.close();
+                Toast.makeText(this,infoContacto,Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this,"Ya tiene un contacto con estos datos",Toast.LENGTH_LONG).show();
+            }
+
         }catch(IOException ex1){
             ex1.printStackTrace();
         }
+
         try {
             //Guardo en el archivo indice el archivo nuevp
-            OutputStreamWriter archivo= new OutputStreamWriter(openFileOutput("Indice.txt", Activity.MODE_PRIVATE));
+            OutputStreamWriter archivo= new OutputStreamWriter(openFileOutput("indice.txt", Activity.MODE_PRIVATE));
             archivo.write(nombre+apellido+" - "+email+".txt");
             archivo.flush();
             archivo.close();
@@ -81,28 +96,6 @@ public class DatosExtra extends AppCompatActivity {
         Toast.makeText(this,"guardado",Toast.LENGTH_LONG).show();
         finish();
     }
-    /*
-    public  void leer(){
-     if(ArchivoExiste(archivos,"bitacora.txt")){
-        try {
-            InputStreamReader archivo=new InputStreamReader(openFileInput("bitacora.txt"));
-            BufferedReader Buff=new BufferedReader(archivo);
-            String linea=Buff.readLine();
-            String textoCompleto="";
-
-            while(linea!=null){
-                textoCompleto=textoCompleto+ linea+"\n";
-                linea= Buff.readLine();
-            }
-            Buff.close();
-            archivo.close();
-            et.setText(textoCompleto);
-        }catch(IOException ex){
-
-        }
-
-    }
-    }
 
         private boolean ArchivoExiste(String[] archivos, String nombreArchivo) {
         for(int i=0;i< archivos.length;i++)
@@ -110,7 +103,7 @@ public class DatosExtra extends AppCompatActivity {
                 return true;
         return false;
     }
-    */
+
 
 
 
